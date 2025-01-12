@@ -78,11 +78,12 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-c", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_accnt, "-sf", col_gray4, NULL };
-static const char *termcmd[]  = { "kitty", NULL };
+static const char *termcmd[]  = { "st", NULL };
 
 static const char *upvol[] = { "wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "2%+", NULL };
 static const char *downvol[] = { "wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "2%-", NULL };
 static const char *mutevol[] = { "wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "toggle", NULL };
+static const char *mutemic[] = { "wpctl", "set-mute", "@DEFAULT_AUDIO_SOURCE@", "toggle", NULL };
 
 #include "movestack.c"
 static const Key keys[] = {
@@ -142,12 +143,13 @@ static const Key keys[] = {
         { 0,                       XF86XK_AudioLowerVolume, spawn, {.v = downvol } },
         { 0,                       XF86XK_AudioMute, spawn, {.v = mutevol } },
         { 0,                       XF86XK_AudioRaiseVolume, spawn, {.v = upvol   } },
+	{ 0, 			XF86XK_AudioMicMute, spawn, {.v = mutemic } },
         { 0,                            XF86XK_MonBrightnessUp,         spawn,  SHCMD("exec brightnessctl s +1%") },
         { 0,                            XF86XK_MonBrightnessDown,       spawn,  SHCMD("exec brightnessctl s 1%-") },
-        { 0,                    XK_Print,  spawn,          SHCMD("scrot ~/Screenshot/screenshot_screen_%Y-%m-%d-%H-%M-%S.png && notify-send -i camera 'Screenshot Taken' 'Saved to ~/Screenshot'") },
-        { MODKEY,              	XK_Print,  spawn,          SHCMD("scrot -u ~/Screenshot/screenshot_window_%Y-%m-%d-%H-%M-%S.png && notify-send -i camera 'Screenshot Taken' 'Saved to ~/Screenshot'") },
-        { MODKEY|ShiftMask,  	XK_Print,  spawn,          SHCMD("scrot -s ~/Screenshot/screenshot_selection_%Y-%m-%d-%H-%M-%S.png notify-send -i camera 'Screenshot Taken' 'Saved to ~/Screenshot'") },
-
+        { 0,                    XK_Print,  spawn,          SHCMD("file=~/Screenshot/screenshot_screen_$(date +%Y-%m-%d-%H-%M-%S).png && scrot $file && notify-send -i $file 'Screenshot Taken' 'Saved to ~/Screenshot'") },
+        { MODKEY,              	XK_Print,  spawn,          SHCMD("file=~/Screenshot/screenshot_window_$(date +%Y-%m-%d-%H-%M-%S).png && scrot -u $file && notify-send -i $file 'Screenshot Taken' 'Saved to ~/Screenshot'") },
+        { MODKEY|ShiftMask,  	XK_Print,  spawn,          SHCMD("scrot -s ~/Screenshot/screenshot_selection_%Y-%m-%d-%H-%M-%S.png -e 'notify-send -i $f \"Screenshot Taken\" \"Saved to ~/Screenshot\"'") },
+	{ MODKEY|ShiftMask, XK_n, spawn, SHCMD("sudo pkill -9 -f /usr/bin/redshift || redshift -P -o -O 4500") },
 };
 
 
